@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark light">
+<title>Вход · TheMarket</title>
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<link rel="stylesheet" href="/assets/panel.css">
+<script src="/assets/login.js" defer></script>
+</head>
+<body class="login-body">
+<main class="login-shell">
+  <section class="login-card" aria-labelledby="login-title">
+    <div class="login-brand"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round"><path d="M5 6h14M12 6v13M5 14V6l7 6 7-6v8"/></svg></span><b>TheMarket<small>ПАНЕЛЬ УПРАВЛЕНИЯ</small></b></div>
+    <h1 id="login-title">Вход для сотрудников</h1>
+    <p class="login-lead">Учётную запись выдаёт владелец магазина в разделе «Сотрудники».</p>
+    <form id="login-form" novalidate>
+      <label>Логин<input name="username" autocomplete="username" required maxlength="64" autocapitalize="off" spellcheck="false" autofocus></label>
+      <label>Пароль<span class="password-field"><input name="password" type="password" autocomplete="current-password" required maxlength="200"><button type="button" class="subtle" id="login-reveal" aria-pressed="false">Показать</button></span></label>
+      <p class="form-error" role="alert"></p>
+      <button class="primary login-submit" type="submit">Войти</button>
+    </form>
+    <p class="login-note">Сессия действует до 7 дней и завершается после 12 часов бездействия. На общем компьютере нажимайте «Выйти».</p>
+  </section>
+  <p class="login-footer">TheMarket · Бот · Сток · Управление</p>
+</main>
+</body>
+</html>

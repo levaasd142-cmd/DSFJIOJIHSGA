@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark light">
+<title>TheMarket · Управление магазином</title>
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<link rel="stylesheet" href="/assets/panel.css">
+<link rel="stylesheet" href="/assets/features.css">
+<link rel="stylesheet" href="/assets/emoji.css">
+<script src="/assets/theme.js"></script>
+<script src="/assets/core.js" defer></script>
+<script src="/assets/dialogs.js" defer></script>
+<script src="/assets/overview.js" defer></script>
+<script src="/assets/orders.js" defer></script>
+<script src="/assets/products.js" defer></script>
+<script src="/assets/customers.js" defer></script>
+<script src="/assets/support.js" defer></script>
+<script src="/assets/promo.js" defer></script>
+<script src="/assets/analytics.js" defer></script>
+<script src="/assets/payments.js" defer></script>
+<script src="/assets/settings.js" defer></script>
+<script src="/assets/broadcasts.js" defer></script>
+<script src="/assets/notifications.js" defer></script>
+<script src="/assets/staff.js" defer></script>
+<script src="/assets/logs.js" defer></script>
+<script src="/assets/backups.js" defer></script>
+<script src="/assets/palette.js" defer></script>
+<script src="/assets/insights.js" defer></script>
+<script src="/assets/crm.js" defer></script>
+<script src="/assets/live.js" defer></script>
+<script src="/assets/emoji-picker.js" defer></script>
+<script src="/assets/app.js" defer></script>
+</head>
+<body>
+<a class="skip-link" href="#view">К содержимому</a>
+<div id="top-progress" aria-hidden="true"></div>
+<aside id="sidebar">
+  <a class="brand" href="/"><span class="brand-mark" id="brand-mark" aria-hidden="true"></span><b>TheMarket<small>ПАНЕЛЬ УПРАВЛЕНИЯ</small></b></a>
+  <div class="workspace"><div class="workspace-info"><i></i>TheMarket<small>Основной магазин</small></div><span class="workspace-tag">STORE</span></div>
+  <nav id="nav" aria-label="Разделы панели"></nav>
+  <div class="side-bottom"><span class="avatar" id="me-avatar" aria-hidden="true">?</span><div class="me-info"><b id="actor">…</b><small id="me-role">Загрузка…</small></div><button type="button" id="logout" class="icon-action" title="Выйти" aria-label="Выйти из панели"></button></div>
+</aside>
+<button type="button" class="sidebar-scrim" id="scrim" aria-label="Закрыть меню" tabindex="-1"></button>
+<main id="main">
+  <header class="topbar">
+    <button type="button" id="sidebar-toggle" class="icon-button sidebar-toggle" aria-label="Открыть меню" aria-expanded="false" aria-controls="sidebar"></button>
+    <div class="header-location"><span class="header-context">Рабочее пространство</span><span class="header-divider">/</span><b id="breadcrumb">Обзор</b></div>
+    <button type="button" id="palette-open" class="search-trigger" aria-label="Поиск и переход (Ctrl+K)" aria-keyshortcuts="Control+K"><span id="palette-icon" aria-hidden="true"></span><span class="search-label">Поиск заказов, покупателей, товаров</span><kbd>Ctrl K</kbd></button>
+    <div class="top-right"><small id="updated-at" class="update-time">Загрузка…</small><span id="connection" class="connection">Подключение…</span><button id="shortcuts-open" type="button" class="icon-button shortcuts-button" title="Горячие клавиши (?)" aria-label="Горячие клавиши" aria-keyshortcuts="Shift+Slash"></button><button id="theme-toggle" type="button" class="icon-button" aria-label="Тема оформления"></button><button id="refresh" type="button" class="icon-button" title="Обновить" aria-label="Обновить данные"></button></div>
+  </header>
+  <div class="content">
+    <div class="page-heading">
+      <div><div class="eyebrow">УПРАВЛЕНИЕ МАГАЗИНОМ</div><h1 id="page-title">Обзор магазина</h1><p id="page-subtitle"></p></div>
+      <button id="add-product" type="button" class="primary" hidden>+ Создать товар</button>
+    </div>
+    <div id="error" class="error-banner" role="alert" hidden></div>
+    <section id="view" aria-live="polite" tabindex="-1"></section>
+  </div>
+  <footer>TheMarket <span>Бот · Сток · Управление</span></footer>
+</main>
+
+<dialog id="ask-dialog" class="small-dialog"><form id="ask-form" method="dialog">
+  <div class="dialog-heading"><h2 id="ask-title">Подтверждение</h2><button type="button" class="close" data-close aria-label="Закрыть окно">×</button></div>
+  <p id="ask-text"></p>
+  <label id="ask-input-label" hidden><span id="ask-input-text"></span><textarea name="value" rows="3"></textarea></label>
+  <p class="form-error" role="alert"></p>
+  <div class="dialog-actions"><button type="button" class="action" data-close>Отмена</button><button id="ask-ok" class="primary" type="submit">Подтвердить</button></div>
+</form></dialog>
+
+<dialog id="product-dialog" class="wide-dialog product-dialog"><form id="product-form">
+  <div class="dialog-heading"><div><span class="eyebrow">КАТАЛОГ</span><h2 id="product-dialog-title">Новый товар</h2></div><button type="button" class="close" data-close aria-label="Закрыть окно">×</button></div>
+  <div class="editor-grid">
+    <div class="editor-fields">
+      <input name="id" type="hidden">
+      <label>Название<input name="name" required maxlength="120" placeholder="Например, подписка на 1 месяц"></label>
+      <div class="form-grid"><label>Категория<input name="category" required maxlength="80" placeholder="Подписки" list="category-list"></label><label>Бейдж<input name="badge" maxlength="16" placeholder="Хит, Новинка…" list="badge-list"></label></div>
+      <datalist id="category-list"></datalist><datalist id="badge-list"><option value="Хит"></option><option value="Новинка"></option><option value="Скидка"></option><option value="Выгодно"></option></datalist>
+      <div class="form-grid"><label><span id="price-label">Цена</span><input name="price" type="number" min="0.01" step="0.01" max="1000000" required></label><label><span id="old-price-label">Старая цена</span><input name="old_price" type="number" min="0.01" step="0.01" max="1000000" placeholder="Зачёркнутая, необязательно"></label></div>
+      <label id="cost-price-field">Себестоимость одной единицы, $<input name="cost_price" type="number" min="0" max="10000000000" step="0.01" placeholder="Не указана"></label>
+      <p class="muted" id="cost-price-note">Для новых партий стока и ручных услуг. Пустое поле — неизвестная себестоимость; 0 — бесплатный товар.</p>
+      <label>Выдача<select name="mode"><option value="auto">Автоматически из стока</option><option value="manual">Через менеджера</option></select></label>
+      <p class="muted" id="mode-note" hidden>Способ выдачи существующего товара не меняется. Создайте копию, чтобы продавать иначе.</p>
+      <label>ID кастомного эмодзи<span class="inline-field"><input name="emoji_id" maxlength="200" placeholder="Отправьте кастомный эмодзи боту"><button type="button" class="action" id="emoji-pick">◈ Выбрать из набора</button></span></label>
+      <label>Описание<textarea name="description" maxlength="1000" rows="4" placeholder="Что покупатель получит и на какой срок"></textarea></label>
+      <label>Инструкция после покупки<textarea name="instruction" maxlength="800" rows="3" placeholder="Как активировать и куда обратиться за помощью"></textarea></label>
+      <label class="checkbox"><input name="active" type="checkbox" checked> Показывать в каталоге</label>
+    </div>
+    <aside class="editor-side">
+      <div class="image-box" id="image-box">
+        <div class="field-label">Фото товара</div>
+        <div class="image-drop" id="image-drop"><img id="image-current" alt="Фото товара" hidden><span id="image-empty">Перетащите фото сюда<small>JPEG, PNG или WebP до 5 МБ. Сохраним как JPEG до 1280 px без метаданных.</small></span></div>
+        <div class="image-actions"><label class="action file-button">Выбрать фото<input type="file" id="image-file" accept="image/jpeg,image/png,image/webp"></label><button type="button" class="action danger" id="image-remove" hidden>Убрать фото</button></div>
+        <p class="muted" id="image-note"></p>
+      </div>
+      <div class="field-label">Предпросмотр в боте</div>
+      <div class="tg-preview" id="tg-preview"></div>
+    </aside>
+  </div>
+  <p class="form-error" role="alert"></p>
+  <div class="dialog-actions"><button type="button" class="action" data-close>Отмена</button><button class="primary" type="submit">Сохранить товар</button></div>
+</form></dialog>
+
+<dialog id="stock-dialog"><form id="stock-form">
+  <div class="dialog-heading"><div><span class="eyebrow">ПОПОЛНЕНИЕ СКЛАДА</span><h2>Загрузить сток</h2></div><button type="button" class="close" data-close aria-label="Закрыть окно">×</button></div>
+  <input name="id" type="hidden"><p id="stock-name"></p>
+  <label>Себестоимость одной позиции этой партии, $<input name="unit_cost" type="number" min="0" max="10000000000" step="0.01" placeholder="По умолчанию — из карточки товара"></label>
+  <p class="muted">Применяется к новым строкам этой загрузки. Дубли сохраняют прежнюю себестоимость.</p>
+  <label>Или загрузите TXT-файл<input type="file" id="stock-file" accept=".txt,text/plain"></label>
+  <label>Одна строка — одна единица товара<textarea name="lines" rows="10" required maxlength="500000" placeholder="ключ-активации-1&#10;ключ-активации-2"></textarea></label>
+  <p class="muted">Дубли в рамках товара пропускаются. Данные хранятся зашифрованными. Автоуведомления покупателям настраиваются в разделе «Рассылки».</p>
+  <div id="stock-preview" class="import-preview">0 строк готово к импорту</div>
+  <p class="form-error" role="alert"></p>
+  <div class="dialog-actions"><button class="action" type="button" data-close>Отмена</button><button class="primary" type="submit">Подтвердить импорт</button></div>
+</form></dialog>
+
+<dialog id="stock-view-dialog" class="wide-dialog">
+  <div class="dialog-heading"><h2 id="stock-view-title">Текущий сток</h2><button type="button" class="close" data-close aria-label="Закрыть окно">×</button></div>
+  <p class="muted" id="stock-view-summary"></p>
+  <div class="toolbar"><select id="stock-view-status" aria-label="Состояние стока"><option value="">Весь текущий сток</option><option value="free">Свободные</option><option value="reserved">В резерве</option></select><button type="button" class="action" id="stock-view-refresh">Обновить</button></div>
+  <div id="stock-view-items"></div>
+  <form id="stock-cost-form" class="subform"><h3>Себестоимость свободного стока</h3><p class="muted">Применяется ко всем свободным позициям этого товара. Резервы и проданные позиции сохраняют свою себестоимость.</p><label>Себестоимость одной позиции, $<input name="amount" type="number" min="0" max="10000000000" step="0.01" required></label><p class="form-error" role="alert"></p><button class="action" type="submit">Применить к свободному стоку</button></form>
+</dialog>
+
+<dialog id="complete-dialog"><form id="complete-form">
+  <div class="dialog-heading"><div><span class="eyebrow">РУЧНОЙ ЗАКАЗ</span><h2>Выполнение заказа</h2></div><button type="button" class="close" data-close aria-label="Закрыть окно">×</button></div>
+  <input name="id" type="hidden">
+  <div class="field-block"><span>Данные покупателя</span><pre id="complete-details"></pre></div>
+  <label>Результат для покупателя<textarea name="result" required maxlength="2000" rows="5" placeholder="Подтверждение выполнения или данные товара"></textarea></label>
+  <p class="muted">После завершения бот отправит результат покупателю.</p>
+  <p class="form-error" role="alert"></p>
+  <div class="dialog-actions"><button class="action" type="button" data-close>Отмена</button><button class="primary" type="submit">Завершить и отправить</button></div>
+</form></dialog>
+
+<dialog id="info-dialog" class="wide-dialog">
+  <div class="dialog-heading"><h2 id="info-title">Карточка</h2><button type="button" class="close" data-close aria-label="Закрыть окно">×</button></div>
+  <div id="info-body"></div>
+</dialog>
+
+<dialog id="wallet-dialog"><form id="wallet-form">
+  <div class="dialog-heading"><h2>Корректировка баланса</h2><button type="button" class="close" data-close aria-label="Закрыть окно">×</button></div>
+  <p class="muted">Изменение внутреннего баланса магазина. Эта операция не возвращает Stars через Telegram.</p>
+  <label>Telegram ID<input name="uid" type="number" min="1" required></label>
+  <label>Действие<select name="mode"><option value="set">Установить точный баланс</option><option value="adjust">Начислить или списать</option></select></label>
+  <label><span id="wallet-amount-label">Сумма</span><input name="amount" type="number" required></label>
+  <label>Причина<textarea name="reason" required maxlength="300" rows="3" placeholder="Например: компенсация по заказу…"></textarea></label>
+  <input name="reference" type="hidden"><p class="form-error" role="alert"></p>
+  <div class="dialog-actions"><button class="action" type="button" data-close>Отмена</button><button class="primary" type="submit">Подтвердить изменение баланса</button></div>
+</form></dialog>
+
+<dialog id="emoji-library-dialog" class="wide-dialog">
+  <div class="dialog-heading"><h2>Эмодзи магазина</h2><button type="button" class="close" data-close aria-label="Закрыть окно">×</button></div>
+  <div id="emoji-library-body"></div>
+</dialog>
+<dialog id="emoji-picker" class="wide-dialog">
+  <div class="dialog-heading"><h2>Выбрать эмодзи</h2><button type="button" class="close" data-close aria-label="Закрыть окно">×</button></div>
+  <div id="emoji-picker-body"></div>
+</dialog>
+
+<dialog id="finance-dialog"><form id="finance-form">
+  <div class="dialog-heading"><h2>Финансовая операция</h2><button class="close" type="button" data-close aria-label="Закрыть окно">×</button></div>
+  <p class="muted">Запись для аналитики. Баланс покупателя и реальные платежи не меняются.</p>
+  <label>Вид<select name="kind"><option value="expense">Расход магазина</option><option value="refund">Учёт возврата</option><option value="replacement">Стоимость замены товара</option></select></label>
+  <label id="finance-category-label">Категория<select name="category"><option value="advertising">Реклама</option><option value="server">Сервер и сервисы</option><option value="fees">Комиссии</option><option value="other">Прочее</option></select></label>
+  <div class="form-grid"><label>Сумма, $<input name="amount" type="number" min="0.01" max="10000000000" step="0.01" required></label><label>Дата по МСК<input name="occurred_date" type="date" required></label></div>
+  <label id="finance-order-label" hidden>Полный номер выполненного заказа<input name="order_id" maxlength="32" pattern="[a-f0-9]{32}" placeholder="Можно скопировать в карточке заказа"></label>
+  <label>Описание<textarea name="note" required maxlength="300" rows="3"></textarea></label>
+  <input name="reference" type="hidden"><p class="form-error" role="alert"></p>
+  <div class="dialog-actions"><button class="action" type="button" data-close>Отмена</button><button class="primary" type="submit">Записать в аналитику</button></div>
+</form></dialog>
+
+<dialog id="news-compose"><form id="news-form">
+  <div class="dialog-heading"><div><span class="eyebrow">СООБЩЕНИЕ ПОКУПАТЕЛЯМ</span><h2 id="news-compose-title">Новая рассылка</h2></div><button type="button" class="close" data-close aria-label="Закрыть окно">×</button></div>
+  <input type="hidden" name="reference">
+  <label>Название для истории<input name="title" required maxlength="120" placeholder="Например, новинки недели"></label>
+  <label>Текст сообщения<textarea name="text" required rows="7" maxlength="3500" placeholder="Что расскажем покупателям?"></textarea></label><span class="news-counter" id="news-counter"></span>
+  <details><summary>Английская версия</summary><label>Для покупателей с английским языком<textarea name="text_en" rows="5" maxlength="3500" placeholder="Если оставить пустым, отправим основной текст"></textarea></label></details>
+  <p class="muted">Обычный текст и эмодзи. Ссылки можно добавить отдельной кнопкой. Markdown и HTML не форматируются.</p>
+  <div class="form-grid"><label>Действие кнопки<select name="target"><option value="catalog">Открыть каталог</option><option value="product">Открыть товар</option><option value="url">Перейти по ссылке</option><option value="none">Без кнопки</option></select></label><label id="news-button-label">Название кнопки<input name="button_text" maxlength="40" placeholder="По умолчанию — по действию"></label></div>
+  <label id="news-product-label" hidden>Товар<select name="product_id"></select></label>
+  <label id="news-url-label" hidden>HTTPS-ссылка<input name="url" type="url" maxlength="1000" placeholder="https://…"></label>
+  <label class="checkbox"><input name="with_banner" type="checkbox"> Добавить баннер TheMarket</label>
+  <fieldset class="segment-box"><legend>Кому отправить</legend>
+    <div class="form-grid"><label>Аудитория<select name="segment_kind"><option value="all">Все получатели</option><option value="buyers">Покупали хотя бы раз</option><option value="non_buyers">Ещё не покупали</option><option value="language">По языку бота</option><option value="product">Купили товар</option><option value="inactive">Давно не заходили</option></select></label>
+    <label id="segment-language-label" hidden>Язык<select name="segment_language"><option value="ru">Русский</option><option value="en">English</option></select></label>
+    <label id="segment-product-label" hidden>Товар<select name="segment_product"></select></label>
+    <label id="segment-days-label" hidden>Не заходили, дней<input name="segment_days" type="number" min="1" max="3650" value="30"></label></div>
+    <p class="audience-count" id="audience-count" role="status"></p>
+    <label>Запуск по расписанию, МСК<input name="scheduled_at" type="datetime-local"><small>Пусто — запуск вручную после предпросмотра.</small></label>
+  </fieldset>
+  <p class="form-error" role="alert"></p>
+  <div class="dialog-actions"><button class="action" type="button" data-close>Отмена</button><button class="primary" type="submit">Подготовить и посмотреть</button></div>
+</form></dialog>
+<dialog id="news-preview" class="wide-dialog">
+  <div class="dialog-heading"><div><span class="eyebrow">ПРЕДПРОСМОТР</span><h2 id="news-preview-title"></h2></div><button type="button" class="close" data-close aria-label="Закрыть окно">×</button></div>
+  <div id="news-preview-body"></div>
+</dialog>
+
+<dialog id="promo-dialog"><form id="promo-form">
+  <div class="dialog-heading"><div><span class="eyebrow">МАРКЕТИНГ</span><h2 id="promo-dialog-title">Новый промокод</h2></div><button type="button" class="close" data-close aria-label="Закрыть окно">×</button></div>
+  <input type="hidden" name="id">
+  <div class="form-grid"><label>Код<input name="code" required maxlength="32" pattern="[A-Za-z0-9_\-]{3,32}" placeholder="SPRING10" autocapitalize="characters" spellcheck="false"></label>
+  <label>Тип скидки<select name="kind"><option value="percent">Процент от суммы</option><option value="fixed">Фиксированная сумма</option></select></label></div>
+  <div class="form-grid"><label><span id="promo-value-label">Скидка, %</span><input name="value" type="number" required min="1" step="1" max="90"></label>
+  <label><span id="promo-min-label">Минимальная сумма заказа</span><input name="min_order" type="number" min="0" step="0.01" value="0"></label></div>
+  <div class="form-grid"><label>Всего использований<input name="max_uses" type="number" min="0" value="0"><small>0 — без ограничения</small></label>
+  <label>На одного покупателя<input name="per_user" type="number" min="1" value="1"></label></div>
+  <div class="form-grid"><label>Действует с, МСК<input name="starts_at" type="datetime-local"></label><label>Действует до, МСК<input name="ends_at" type="datetime-local"></label></div>
+  <label>Только для товаров<select name="product_ids" multiple size="5"></select><small>Ничего не выбрано — скидка на весь каталог. Ctrl / ⌘ — выбрать несколько.</small></label>
+  <label>Заметка для команды<input name="note" maxlength="200" placeholder="Например: для подписчиков канала"></label>
+  <label class="checkbox"><input type="checkbox" name="active" checked> Активен сразу после сохранения</label>
+  <p class="form-error" role="alert"></p>
+  <div class="dialog-actions"><button class="action" type="button" data-close>Отмена</button><button class="primary" type="submit">Сохранить промокод</button></div>
+</form></dialog>
+
+<dialog id="staff-dialog" class="small-dialog"><form id="staff-form">
+  <div class="dialog-heading"><div><span class="eyebrow">КОМАНДА</span><h2>Новый сотрудник</h2></div><button type="button" class="close" data-close aria-label="Закрыть окно">×</button></div>
+  <label>Логин<input name="username" required maxlength="32" pattern="[A-Za-z0-9_.\-]{3,32}" autocomplete="off" spellcheck="false" placeholder="anna.support"><small>Латиница, цифры, точка, дефис, подчёркивание; 3–32 символа.</small></label>
+  <label>Пароль<span class="inline-field"><input name="password" required minlength="10" maxlength="200" type="text" autocomplete="new-password" spellcheck="false"><button type="button" class="action" id="staff-generate">Сгенерировать</button></span><small>Не меньше 10 символов. Передайте его сотруднику лично.</small></label>
+  <label>Роль<select name="role"><option value="support">Поддержка</option><option value="manager">Менеджер</option><option value="owner">Владелец</option></select><small id="staff-role-note"></small></label>
+  <p class="form-error" role="alert"></p>
+  <div class="dialog-actions"><button class="action" type="button" data-close>Отмена</button><button class="primary" type="submit">Создать учётную запись</button></div>
+</form></dialog>
+
+<dialog id="palette" class="palette-dialog" aria-label="Поиск и переход">
+  <div class="palette-input"><span id="palette-search-icon" aria-hidden="true"></span><input id="palette-query" type="text" placeholder="Раздел, номер заказа, Telegram ID, @username или товар" autocomplete="off" spellcheck="false" aria-label="Что найти" aria-controls="palette-results" role="combobox" aria-expanded="true" aria-autocomplete="list"><kbd>Esc</kbd></div>
+  <div id="palette-results" role="listbox" aria-label="Результаты"></div>
+  <p class="palette-hint"><kbd>↑</kbd> <kbd>↓</kbd> выбрать · <kbd>Enter</kbd> открыть · <kbd>Ctrl K</kbd> из любого раздела</p>
+</dialog>
+
+<dialog id="shortcuts-dialog" class="shortcuts-dialog" aria-labelledby="shortcuts-title">
+  <div class="dialog-heading"><div><span class="eyebrow">КЛАВИАТУРА</span><h2 id="shortcuts-title">Горячие клавиши</h2></div><button type="button" class="close" data-close aria-label="Закрыть окно">×</button></div>
+  <div id="shortcuts-body" class="shortcuts-body" tabindex="-1" autofocus></div>
+  <p class="palette-hint">Работают везде, кроме полей ввода. Раскладка не важна.</p>
+</dialog>
+
+<div id="toast" class="toast-stack" hidden></div>
+</body>
+</html>

@@ -1,0 +1,21 @@
+/* Inline custom emoji: picker popover, field button, inline previews. */
+.emoji-field { position: relative; display: block; }
+.emoji-field > input, .emoji-field > textarea { width: 100%; padding-right: 40px; }
+.emoji-insert { position: absolute; top: 6px; right: 6px; width: 28px; height: 28px; padding: 0; border: 0; border-radius: 8px;
+  background: transparent; font-size: 16px; line-height: 28px; cursor: pointer; opacity: .7; }
+.emoji-insert:hover, .emoji-insert:focus-visible { opacity: 1; background: var(--accent-soft, rgba(80, 120, 255, .12)); }
+.emoji-pop { position: fixed; z-index: 1000; width: min(340px, calc(100vw - 16px)); display: grid; gap: 8px; padding: 10px;
+  background: var(--surface, #fff); color: var(--text, #172538); border: 1px solid var(--line, #d5dbe5); border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, .22); margin: 0; }
+.emoji-pop-search { width: 100%; }
+.emoji-pop-tabs { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: thin; }
+.emoji-pop-tabs button { flex: none; padding: 4px 10px; border: 1px solid var(--line, #d5dbe5); border-radius: 999px;
+  background: transparent; color: inherit; font-size: 12px; white-space: nowrap; }
+.emoji-pop-tabs [aria-selected="true"] { background: var(--accent-soft, rgba(80, 120, 255, .12)); border-color: var(--accent, #3b6cff); }
+.emoji-pop-grid { display: grid; grid-template-columns: repeat(auto-fill, 40px); gap: 2px; max-height: 200px; overflow: auto; }
+.emoji-pop-grid button { width: 40px; height: 40px; padding: 0; border: 1px solid transparent; border-radius: 8px; background: transparent; font-size: 22px; }
+.emoji-pop-grid button .emoji-art { width: 30px; height: 30px; }
+.emoji-pop-grid button:hover, .emoji-pop-grid button.active { background: var(--accent-soft, rgba(80, 120, 255, .12)); border-color: var(--accent, #3b6cff); }
+.emoji-pop-grid p { grid-column: 1 / -1; margin: 8px 0; }
+.emoji-pop > small { font-size: 11px; }
+.emoji-inline .emoji-art { width: 1.25em; height: 1.25em; vertical-align: -0.25em; }

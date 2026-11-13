@@ -1,0 +1,217 @@
+/* TheMarket 3.1 features: live activity, insights, customer CRM, order notes, reply templates and
+   bulk product actions. Only panel.css tokens (var(--…)) are used, so both themes follow it.
+   Every selector is prefixed with .tmx- to stay clear of panel.css. */
+
+/* ------------------------------------------------------------ live: bell, dropdown, toasts */
+.tmx-bell { position: relative; }
+.tmx-bell[aria-expanded="true"] { background: var(--hover); color: var(--text); }
+.tmx-bell-count { position: absolute; top: -6px; right: -7px; min-width: 17px; height: 17px; padding: 0 4px; border-radius: 9px;
+  background: var(--red); color: var(--surface); font-size: 9.5px; font-weight: 700; line-height: 17px; text-align: center;
+  font-variant-numeric: tabular-nums; box-shadow: 0 0 0 2px var(--bg); }
+.tmx-bell-count[hidden] { display: none; }
+.tmx-live { display: inline-flex; align-items: center; gap: 6px; font-size: 9.5px; font-weight: 700; letter-spacing: .08em;
+  color: var(--faint); white-space: nowrap; }
+.tmx-live i { width: 7px; height: 7px; border-radius: 50%; background: var(--faint); position: relative; }
+.tmx-live[data-state="live"] { color: var(--green); }
+.tmx-live[data-state="live"] i { background: var(--green); }
+.tmx-live[data-state="live"] i::after { content: ''; position: absolute; inset: -4px; border-radius: 50%; border: 2px solid var(--green);
+  opacity: 0; animation: tmx-pulse 2s ease-out infinite; }
+.tmx-live[data-state="polling"] { color: var(--orange); }
+.tmx-live[data-state="polling"] i { background: var(--orange); }
+@keyframes tmx-pulse { 0% { transform: scale(.5); opacity: .7; } 100% { transform: scale(1.6); opacity: 0; } }
+
+.tmx-feed { position: fixed; z-index: 60; width: min(380px, calc(100vw - 24px)); max-height: min(560px, calc(100dvh - 90px));
+  display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--line-strong); border-radius: var(--radius);
+  box-shadow: var(--shadow); overflow: hidden; transform-origin: top right; animation: tmx-pop .16s ease-out; }
+.tmx-feed[hidden] { display: none; }
+@keyframes tmx-pop { from { opacity: 0; transform: translateY(-4px) scale(.98); } to { opacity: 1; transform: none; } }
+.tmx-feed-head { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-bottom: 1px solid var(--line); }
+.tmx-feed-head h2 { font-size: 13px; margin: 0; flex: 1; }
+.tmx-feed-tools { display: flex; align-items: center; gap: 6px; padding: 8px 14px; border-bottom: 1px solid var(--line-soft);
+  background: var(--surface-2); font-size: 11px; color: var(--muted); }
+.tmx-feed-tools .subtle { padding: 3px 8px; font-size: 11px; }
+.tmx-feed-tools label { display: inline-flex; align-items: center; gap: 6px; margin: 0 auto 0 0; font-size: 11px; color: var(--muted); cursor: pointer; }
+.tmx-feed-list { overflow-y: auto; overscroll-behavior: contain; padding: 4px 0; margin: 0; list-style: none; }
+.tmx-feed-item { display: grid; grid-template-columns: 10px minmax(0, 1fr) auto; gap: 10px; align-items: start; width: 100%; padding: 10px 14px;
+  border: 0; background: none; color: var(--text-2); text-align: left; border-radius: 0; font: inherit; cursor: pointer; }
+.tmx-feed-item:hover, .tmx-feed-item:focus-visible { background: var(--row-hover); outline: none; }
+.tmx-feed-item:focus-visible { box-shadow: inset 2px 0 0 var(--accent); }
+.tmx-feed-item b { display: block; color: var(--text); font-size: 12px; font-weight: 600; }
+.tmx-feed-item span { display: block; font-size: 11.5px; color: var(--muted); overflow-wrap: anywhere; }
+.tmx-feed-item small { color: var(--faint); font-size: 10px; white-space: nowrap; padding-top: 2px; }
+.tmx-feed-item.unread b::after { content: ''; display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-left: 6px;
+  vertical-align: middle; background: var(--accent); }
+.tmx-dot { width: 8px; height: 8px; margin-top: 5px; border-radius: 50%; background: var(--accent); }
+.tmx-dot.green { background: var(--green); } .tmx-dot.red { background: var(--red); }
+.tmx-dot.orange { background: var(--orange); } .tmx-dot.blue { background: var(--blue); }
+.tmx-feed-empty { padding: 28px 18px; text-align: center; color: var(--muted); font-size: 12px; }
+
+.tmx-toasts { position: fixed; inset: 74px 24px auto auto; z-index: 90; display: flex; flex-direction: column; gap: 8px;
+  width: min(360px, calc(100vw - 32px)); pointer-events: none; }
+.tmx-toast { pointer-events: auto; display: grid; grid-template-columns: 10px minmax(0, 1fr) auto; gap: 10px; align-items: start;
+  padding: 11px 10px 11px 14px; background: var(--raised); color: var(--text-2); border: 1px solid var(--line-strong);
+  border-radius: 12px; box-shadow: var(--shadow); font-size: 12px; animation: tmx-slide .22s ease-out; cursor: pointer; }
+.tmx-toast b { display: block; color: var(--text); font-size: 12.5px; }
+.tmx-toast span { display: block; color: var(--muted); overflow-wrap: anywhere; }
+.tmx-toast .close { width: 24px; height: 24px; font-size: 16px; }
+.tmx-toast.leaving { opacity: 0; transform: translateX(16px); transition: opacity .2s, transform .2s; }
+@keyframes tmx-slide { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: none; } }
+
+/* ------------------------------------------------------------ CRM: tags, notes, ban */
+.tmx-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 5px; }
+.tmx-tag { display: inline-flex; align-items: center; gap: 4px; max-width: 100%; font-size: 10px; line-height: 1.5; padding: 1px 7px;
+  border-radius: 999px; background: var(--accent-soft); color: var(--accent-text); border: 1px solid var(--accent-line);
+  overflow-wrap: anywhere; }
+.tmx-tag.banned { background: var(--red-bg); color: var(--red); border-color: var(--red-line); }
+.tmx-tag button { border: 0; background: none; color: inherit; padding: 0 0 0 2px; font-size: 12px; line-height: 1; cursor: pointer; opacity: .75; }
+.tmx-tag button:hover, .tmx-tag button:focus-visible { opacity: 1; }
+.tmx-tagbar { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 10px 20px; border-bottom: 1px solid var(--line-soft); }
+.tmx-tagbar > span { font-size: 11px; color: var(--muted); margin-right: 4px; }
+.tmx-tagbar button { display: inline-flex; gap: 6px; align-items: center; font-size: 11px; padding: 3px 10px; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--surface-2); color: var(--muted); }
+.tmx-tagbar button:hover { color: var(--text); }
+.tmx-tagbar button[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent-line); color: var(--accent-text); }
+.tmx-tagbar button.danger[aria-pressed="true"] { background: var(--red-bg); border-color: var(--red-line); color: var(--red); }
+.tmx-tagbar b { font-weight: 600; font-variant-numeric: tabular-nums; }
+.tmx-tag-results[hidden], .tmx-hidden { display: none !important; }
+
+.tmx-section { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line); }
+.tmx-section h3 { display: flex; align-items: center; gap: 8px; margin: 0 0 10px; }
+.tmx-section h3 small { font-weight: 400; color: var(--faint); }
+.tmx-tag-editor { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 6px 8px; min-height: 38px;
+  background: var(--input-bg); border: 1px solid var(--input-line); border-radius: var(--radius-sm); }
+.tmx-tag-editor:focus-within { border-color: var(--input-focus); }
+.tmx-tag-editor input { flex: 1 1 120px; min-width: 100px; border: 0 !important; background: none !important; padding: 2px 0 !important;
+  box-shadow: none !important; outline: none; }
+.tmx-ban { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 10px 12px; border-radius: var(--radius-sm);
+  background: var(--surface-2); border: 1px solid var(--line); font-size: 12px; }
+.tmx-ban.on { background: var(--red-bg); border-color: var(--red-line); color: var(--red); }
+.tmx-ban span { flex: 1 1 200px; }
+.tmx-row-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; align-items: center; }
+.tmx-saved { font-size: 11px; color: var(--green); }
+
+.tmx-notes { list-style: none; margin: 0 0 10px; padding: 0; display: grid; gap: 8px; }
+.tmx-notes li { padding: 9px 12px; border-radius: var(--radius-sm); background: var(--surface-2); border: 1px solid var(--line-soft); }
+.tmx-notes li p { margin: 0 0 3px; white-space: pre-wrap; overflow-wrap: anywhere; color: var(--text-2); font-size: 12.5px; }
+.tmx-notes li small { color: var(--faint); font-size: 10.5px; }
+
+/* ------------------------------------------------------------ support: reply templates */
+.reply-box.tmx-has-templates { grid-template-columns: 1fr auto auto; }
+.tmx-tpl-button { height: 40px; }
+.tmx-tpl-menu { position: fixed; z-index: 70; width: min(340px, calc(100vw - 24px)); max-height: min(380px, 60dvh); display: flex;
+  flex-direction: column; background: var(--surface); border: 1px solid var(--line-strong); border-radius: 12px; box-shadow: var(--shadow);
+  overflow: hidden; animation: tmx-pop .14s ease-out; }
+.tmx-tpl-menu[hidden] { display: none; }
+.tmx-tpl-menu input { margin: 10px; width: calc(100% - 20px); }
+.tmx-tpl-menu ul { list-style: none; margin: 0; padding: 0 0 6px; overflow-y: auto; }
+.tmx-tpl-menu li button { display: block; width: 100%; text-align: left; border: 0; border-radius: 0; background: none; padding: 8px 14px;
+  color: var(--text-2); font: inherit; cursor: pointer; }
+.tmx-tpl-menu li button:hover, .tmx-tpl-menu li button:focus-visible, .tmx-tpl-menu li button.active { background: var(--row-hover); outline: none; }
+.tmx-tpl-menu li b { display: block; font-size: 12px; color: var(--text); }
+.tmx-tpl-menu li small { display: block; font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tmx-tpl-menu footer { display: flex; justify-content: space-between; gap: 8px; padding: 8px 10px; border-top: 1px solid var(--line); width: auto; margin: 0; }
+.tmx-tpl-list { list-style: none; margin: 0 0 14px; padding: 0; display: grid; gap: 8px; max-height: 40vh; overflow-y: auto; }
+.tmx-tpl-list li { display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--radius-sm); }
+.tmx-tpl-list li > div { flex: 1; min-width: 0; }
+.tmx-tpl-list li p { margin: 2px 0 0; font-size: 11.5px; color: var(--muted); white-space: pre-wrap; overflow-wrap: anywhere;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+/* ------------------------------------------------------------ products: bulk selection */
+.tmx-check { width: 16px; height: 16px; margin: 0 10px 0 0; flex: none; vertical-align: middle; cursor: pointer; accent-color: var(--accent); }
+.table tr.tmx-selected td { background: var(--accent-soft); }
+.tmx-bulkbar { position: sticky; bottom: 12px; z-index: 20; display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+  margin: 12px; padding: 10px 12px; border-radius: 12px; background: var(--raised); border: 1px solid var(--accent-line);
+  box-shadow: var(--shadow); animation: tmx-rise .18s ease-out; }
+.tmx-bulkbar[hidden] { display: none; }
+.tmx-bulkbar b { margin-right: auto; font-size: 12.5px; color: var(--text); font-variant-numeric: tabular-nums; }
+@keyframes tmx-rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+/* ------------------------------------------------------------ insights */
+.tmx-insights-toolbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 18px; }
+.tmx-insights-toolbar .tmx-custom { display: inline-flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.tmx-insights-toolbar .tmx-custom[hidden] { display: none; }
+.tmx-insights-toolbar input[type=date] { width: auto; }
+.tmx-insights-toolbar .muted { font-size: 11px; margin-left: auto; }
+.tmx-grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 20px; }
+.tmx-grid > .panel { margin-bottom: 20px; }
+.tmx-body { padding: 18px 20px; }
+
+.tmx-goal { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 20px; align-items: center; }
+.tmx-ring { width: 132px; height: 132px; }
+.tmx-ring circle { fill: none; stroke-width: 11; }
+.tmx-ring .track { stroke: var(--chart-grid); }
+.tmx-ring .forecast { stroke: var(--chart-bar); opacity: .28; stroke-linecap: round; }
+.tmx-ring .value { stroke: var(--chart-bar); stroke-linecap: round; transition: stroke-dashoffset .8s cubic-bezier(.2, .8, .2, 1); }
+.tmx-ring .value.done { stroke: var(--green); }
+.tmx-ring text { fill: var(--text); font-size: 21px; font-weight: 650; text-anchor: middle; font-variant-numeric: tabular-nums; }
+.tmx-ring text.sub { fill: var(--muted); font-size: 9.5px; font-weight: 500; }
+.tmx-goal dl { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 6px 14px; margin: 0 0 12px; font-size: 12px; }
+.tmx-goal dt { color: var(--muted); }
+.tmx-goal dd { margin: 0; color: var(--text); font-weight: 600; font-variant-numeric: tabular-nums; text-align: right; }
+
+.tmx-funnel { display: grid; gap: 12px; }
+.tmx-funnel-row { display: grid; grid-template-columns: minmax(110px, 30%) minmax(0, 1fr) auto; gap: 12px; align-items: center; font-size: 12px; }
+.tmx-funnel-row > span { color: var(--text-2); }
+.tmx-funnel-row small { display: block; color: var(--faint); font-size: 10.5px; }
+.tmx-funnel-track { height: 22px; border-radius: 6px; background: var(--surface-2); border: 1px solid var(--line-soft); overflow: hidden; }
+.tmx-funnel-bar { height: 100%; width: var(--w, 0%); min-width: 2px; background: var(--chart-bar); border-radius: 5px 0 0 5px;
+  transition: width .6s cubic-bezier(.2, .8, .2, 1); }
+.tmx-funnel-row:nth-child(2) .tmx-funnel-bar { opacity: .85; } .tmx-funnel-row:nth-child(3) .tmx-funnel-bar { opacity: .7; }
+.tmx-funnel-row:nth-child(4) .tmx-funnel-bar { opacity: .55; }
+.tmx-funnel-row b { font-variant-numeric: tabular-nums; color: var(--text); text-align: right; min-width: 64px; }
+.tmx-note { margin: 12px 0 0; font-size: 11px; color: var(--faint); }
+
+.tmx-heatmap { overflow-x: auto; padding: 4px 0 2px; }
+.tmx-heatmap svg { display: block; width: 100%; min-width: 560px; height: auto; }
+.tmx-heatmap .cell { fill: var(--chart-bar); stroke: var(--surface); stroke-width: 2; rx: 3px; cursor: default; }
+.tmx-heatmap .cell.zero { fill: var(--chart-grid); }
+.tmx-heatmap .cell:focus { outline: none; stroke: var(--text); stroke-width: 2; }
+.tmx-heatmap .cell.active { stroke: var(--text); }
+.tmx-heatmap text { fill: var(--chart-label); font-size: 10px; }
+.tmx-heat-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-top: 10px; }
+.tmx-legend { display: inline-flex; align-items: center; gap: 6px; font-size: 10.5px; color: var(--faint); }
+.tmx-legend i { width: 14px; height: 10px; border-radius: 3px; background: var(--chart-bar); }
+.tmx-legend i.l1 { opacity: .2; } .tmx-legend i.l2 { opacity: .55; }
+.tmx-gap { margin-top: 12px; }
+
+.tmx-cohorts { overflow-x: auto; }
+.tmx-cohorts table { border-collapse: separate; border-spacing: 3px; width: 100%; font-size: 11px; font-variant-numeric: tabular-nums; }
+.tmx-cohorts th { color: var(--muted); font-weight: 550; font-size: 10.5px; padding: 4px 6px; white-space: nowrap; text-align: center; }
+.tmx-cohorts th[scope=row] { text-align: left; }
+.tmx-cohorts td { min-width: 42px; padding: 6px 4px; text-align: center; border-radius: 5px; color: var(--text-2);
+  background: color-mix(in srgb, var(--chart-bar) calc(var(--v, 0) * 85%), var(--surface-2)); }
+.tmx-cohorts td.hot { color: var(--accent-ink); font-weight: 600; }
+.tmx-cohorts td.na { background: none; color: var(--faint); }
+.tmx-cohorts td.size { background: none; color: var(--text); font-weight: 600; text-align: right; }
+
+@media (max-width: 1180px) { .tmx-grid { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 760px) {
+  .tmx-toasts { top: auto; bottom: 16px; left: 16px; right: 16px; width: auto; }
+  .tmx-feed { left: 12px !important; right: 12px; width: auto; }
+  .tmx-live b { display: none; }
+  .tmx-tagbar { padding: 10px 14px; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+  .tmx-tagbar button { flex: none; }
+  .tmx-body { padding: 14px 16px; }
+  .tmx-goal { grid-template-columns: minmax(0, 1fr); justify-items: center; }
+  .tmx-goal > div { width: 100%; }
+  .tmx-funnel-row { grid-template-columns: minmax(0, 1fr) auto; }
+  .tmx-funnel-row .tmx-funnel-track { grid-column: 1 / -1; grid-row: 2; }
+  .tmx-bulkbar { margin: 10px; }
+  .reply-box.tmx-has-templates { grid-template-columns: 1fr auto; }
+  .reply-box.tmx-has-templates textarea { grid-column: 1 / -1; }
+  .tmx-insights-toolbar .muted { margin-left: 0; width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tmx-live i::after, .tmx-feed, .tmx-toast, .tmx-bulkbar, .tmx-tpl-menu { animation: none !important; }
+  .tmx-ring .value, .tmx-funnel-bar { transition: none !important; }
+}
+@media (forced-colors: active) {
+  .tmx-heatmap .cell, .tmx-funnel-bar, .tmx-ring .value { fill: CanvasText; stroke: CanvasText; background: CanvasText; }
+}
+
+/* Overrides kept last: .panel clips overflow, so the bulk bar floats over the viewport instead of
+   sticking inside it; the CRM block opens the customer card. */
+.tmx-bulkbar { position: fixed; left: 50%; bottom: 18px; margin: 0; width: max-content; max-width: calc(100vw - 32px);
+  transform: translateX(-50%); animation: none; }
+.tmx-section.tmx-crm { margin: 0 0 16px; padding: 0 0 16px; border-top: 0; border-bottom: 1px solid var(--line); }
+@media (max-width: 760px) { .tmx-bulkbar { left: 16px; right: 16px; bottom: 12px; width: auto; transform: none; } }
